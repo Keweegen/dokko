@@ -1,0 +1,54 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: ID!
+  username: String!
+  password: String!
+  role_id: Int!
+  active: Boolean!
+}
+
+type Role {
+  id: ID!
+  name: String!
+}
+
+type Query {
+  users: [User!]!
+  user(id: Float!): User!
+  roles: [Role!]!
+  role(id: Float!): Role!
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!, id: Float!): User!
+  removeUser(id: Float!): User!
+  createRole(createRoleInput: CreateRoleInput!): Role!
+  updateRole(updateRoleInput: UpdateRoleInput!, id: Float!): Role!
+  removeRole(id: Float!): Role!
+}
+
+input CreateUserInput {
+  username: String!
+  password: String!
+  roles: Int = 3
+  active: Boolean!
+}
+
+input UpdateUserInput {
+  username: String
+  password: String
+  roles: Int = 3
+  active: Boolean
+}
+
+input CreateRoleInput {
+  name: String!
+}
+
+input UpdateRoleInput {
+  name: String
+}

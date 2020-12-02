@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model roles {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  users users[]
+}
+
+model users {
+  id                     Int                      @id @default(autoincrement())
+  username               String                   @unique
+  password               String
+  role_id                Int?
+  active                 Boolean
+  roles                  roles?                   @relation(fields: [role_id], references: [id])
+  order_delivery_contact order_delivery_contact[]
+  orders                 orders[]
+}
+
+model categories {
+  id               Int          @id @default(autoincrement())
+  name             String       @unique
+  parent_id        Int?
+  description      String?
+  active           Boolean
+  categories       categories?  @relation("categoriesTocategories_parent_id", fields: [parent_id], references: [id])
+  other_categories categories[] @relation("categoriesTocategories_parent_id")
+  products         products[]
+}
+
+model order_delivery {
+  id                        Int                     @id @default(autoincrement())
+  order_id                  Int?
+  method                    Int                     @default(0)
+  price                     Int                     @default(0)
+  status                    Int                     @default(0)
+  order_delivery_contact_id Int?
+  order_delivery_contact    order_delivery_contact? @relation(fields: [order_delivery_contact_id], references: [id])
+  orders                    orders?                 @relation(fields: [order_id], references: [id])
+}
+
+model order_delivery_contact {
+  id             Int              @id @default(autoincrement())
+  order_id       Int?
+  user_id        Int?
+  first_name     String
+  last_name      String
+  email          String
+  phone_number   Int
+  address        String
+  comment        String?
+  orders         orders?          @relation(fields: [order_id], references: [id])
+  users          users?           @relation(fields: [user_id], references: [id])
+  order_delivery order_delivery[]
+}
+
+model order_payment {
+  id         Int       @id @default(autoincrement())
+  order_id   Int?
+  method     Int       @default(0)
+  price      Int       @default(0)
+  status     Int       @default(0)
+  created_at DateTime?
+  updated_at DateTime?
+  orders     orders?   @relation(fields: [order_id], references: [id])
+}
+
+model order_product {
+  id          Int       @id @default(autoincrement())
+  order_id    Int?
+  product_id  Int?
+  quantity    Int       @default(0)
+  price       Int       @default(0)
+  total_price Int       @default(0)
+  orders      orders?   @relation(fields: [order_id], references: [id])
+  products    products? @relation(fields: [product_id], references: [id])
+}
+
+model orders {
+  id                     Int                      @id @default(autoincrement())
+  user_id                Int?
+  total_quantity         Int                      @default(0)
+  total_price            Int                      @default(0)
+  status                 Int                      @default(0)
+  created_at             DateTime?
+  updated_at             DateTime?
+  users                  users?                   @relation(fields: [user_id], references: [id])
+  order_delivery         order_delivery[]
+  order_delivery_contact order_delivery_contact[]
+  order_payment          order_payment[]
+  order_product          order_product[]
+}
+
+model products {
+  id             Int             @id @default(autoincrement())
+  name           String          @unique
+  category_id    Int?
+  purchase_price Int?            @default(0)
+  selling_price  Int?            @default(0)
+  quantity       Int?            @default(0)
+  active         Boolean
+  categories     categories?     @relation(fields: [category_id], references: [id])
+  order_product  order_product[]
+}
